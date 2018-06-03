@@ -30,12 +30,20 @@ export class DistinctPoints {
   transitionCount = 0;
   distinctValuesCount = 0;
   elapsed = 0;
+  lastPoint = null;
 
   constructor(public name) {}
 
   // ts numeric ms,
   // val is the normalized value
   add(ts: number, val: string) {
+    //console.log('TEST add');
+    this.lastPoint = {
+      val: val,
+      start: ts,
+      ms: 0,
+    };
+
     if (this.last == null) {
       this.last = {
         val: val,
@@ -73,9 +81,15 @@ export class DistinctPoints {
   }
 
   finish(ctrl) {
+    //console.log('TEST finish9');
     if (this.changes.length < 1) {
       console.log('no points found!');
       return;
+    }
+
+    if (ctrl.panel.gantCustom == true && this.lastPoint != null) {
+      //console.log('add my last point2');
+      this.changes.push(this.lastPoint);
     }
 
     if (!this.asc) {
@@ -83,24 +97,27 @@ export class DistinctPoints {
       _.reverse(this.changes);
     }
 
-    // Add a point beyond the controls
-    if (this.last.start < ctrl.range.to) {
-      let until = ctrl.range.to + 1;
-      // let now = Date.now();
-      // if(this.last.start < now && ctrl.range.to > now) {
-      //   until = now;
-      // }
+    if (ctrl.panel.gantCustom == false) {
+      // Add a point beyond the controls
+      if (this.last.start < ctrl.range.to) {
+        let until = ctrl.range.to + 1;
+        // let now = Date.now();
+        // if(this.last.start < now && ctrl.range.to > now) {
+        //   until = now;
+        // }
 
-      // This won't be shown, but will keep the count consistent
-      this.changes.push({
-        val: this.last.val,
-        start: until,
-        ms: 0,
-      });
+        // This won't be shown, but will keep the count consistent
+        this.changes.push({
+          val: this.last.val,
+          start: until,
+          ms: 0,
+        });
+      }
     }
-
     this.transitionCount = 0;
     let distinct = new Map<string, LegendValue>();
+
+    //  console.log("changes %j",this.changes);
     let last: PointInfo = this.changes[0];
     for (let i = 1; i < this.changes.length; i++) {
       let pt = this.changes[i];
@@ -137,6 +154,7 @@ export class DistinctPoints {
       value.per = value.ms / elapsed;
       this.legendInfo.push(value);
     });
+
     this.distinctValuesCount = _.size(this.legendInfo);
 
     if (!ctrl.isTimeline) {

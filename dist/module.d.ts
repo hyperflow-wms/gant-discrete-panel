@@ -43,6 +43,7 @@ declare class DiscretePanelCtrl extends CanvasPanelCtrl {
         expandFromQueryS: number;
         legendSortBy: string;
         units: string;
+        gantCustom: boolean;
     };
     annotations: any;
     data: DistinctPoints[];

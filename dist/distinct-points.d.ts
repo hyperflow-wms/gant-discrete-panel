@@ -20,6 +20,7 @@ export declare class DistinctPoints {
     transitionCount: number;
     distinctValuesCount: number;
     elapsed: number;
+    lastPoint: any;
     constructor(name: any);
     add(ts: number, val: string): void;
     finish(ctrl: any): void;

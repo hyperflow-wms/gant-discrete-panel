@@ -40,7 +40,6 @@ grunt
 * Basic Annotation Support
 * Fix mapping numeric data to text
 
-
 ##### v0.0.7
 
 * Switch to typescript

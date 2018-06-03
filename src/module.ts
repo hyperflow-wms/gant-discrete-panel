@@ -104,6 +104,7 @@ class DiscretePanelCtrl extends CanvasPanelCtrl {
     expandFromQueryS: 0,
     legendSortBy: '-ms',
     units: 'short',
+    gantCustom: false,
   };
 
   annotations: any = [];
@@ -299,6 +300,22 @@ class DiscretePanelCtrl extends CanvasPanelCtrl {
 
   onDataReceived(dataList) {
     $(this.canvas).css('cursor', 'pointer');
+
+    //console.log("datareceived",dataList);
+
+    if (this.panel.gantCustom) {
+      //console.log("will be sorting");
+      dataList.sort(function(x, y) {
+        //console.log("datareceived %j %j",x.datapoints[0][1],y.datapoints[0][1]);
+        if (x.datapoints[0][1] > y.datapoints[0][1]) {
+          return -1;
+        } else if (x.datapoints[0][1] < y.datapoints[0][1]) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+    //console.log("after sort",dataList);
 
     let data: DistinctPoints[] = [];
     _.forEach(dataList, metric => {
@@ -660,7 +677,7 @@ class DiscretePanelCtrl extends CanvasPanelCtrl {
 
     let top = 0;
     let elapsed = this.range.to - this.range.from;
-
+    //console.log("data before render %j",this.data);
     this._renderDimensions.matrix = [];
     _.forEach(this.data, metric => {
       let positions = [];
@@ -694,6 +711,8 @@ class DiscretePanelCtrl extends CanvasPanelCtrl {
         y: top,
         positions: positions,
       });
+
+      //  console.log("data before matrix %j",this._renderDimensions.matrix);
 
       top += rowHeight;
     });
@@ -792,9 +811,15 @@ class DiscretePanelCtrl extends CanvasPanelCtrl {
   _renderRects() {
     const matrix = this._renderDimensions.matrix;
     const ctx = this.context;
+
+    //console.log("before fill rect matrix %j",matrix);
+    let valuechange = 0;
+    if (this.panel.gantCustom) {
+      valuechange = 1;
+    }
     _.forEach(this.data, (metric, i) => {
       const rowObj = matrix[i];
-      for (let j = 0; j < rowObj.positions.length; j++) {
+      for (let j = 0; j < rowObj.positions.length - valuechange; j++) {
         const currentX = rowObj.positions[j];
         let nextX = this._renderDimensions.width;
         if (j + 1 !== rowObj.positions.length) {

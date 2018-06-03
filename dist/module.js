@@ -122,6 +122,7 @@ System.register(['./canvas-metric', './distinct-points', 'lodash', 'jquery', 'mo
                         expandFromQueryS: 0,
                         legendSortBy: '-ms',
                         units: 'short',
+                        gantCustom: false,
                     };
                     this.annotations = [];
                     this.data = null;
@@ -269,6 +270,21 @@ System.register(['./canvas-metric', './distinct-points', 'lodash', 'jquery', 'mo
                 DiscretePanelCtrl.prototype.onDataReceived = function (dataList) {
                     var _this = this;
                     jquery_1.default(this.canvas).css('cursor', 'pointer');
+                    //console.log("datareceived",dataList);
+                    if (this.panel.gantCustom) {
+                        //console.log("will be sorting");
+                        dataList.sort(function (x, y) {
+                            //console.log("datareceived %j %j",x.datapoints[0][1],y.datapoints[0][1]);
+                            if (x.datapoints[0][1] > y.datapoints[0][1]) {
+                                return -1;
+                            }
+                            else if (x.datapoints[0][1] < y.datapoints[0][1]) {
+                                return 1;
+                            }
+                            return 0;
+                        });
+                    }
+                    //console.log("after sort",dataList);
                     var data = [];
                     lodash_1.default.forEach(dataList, function (metric) {
                         if ('table' === metric.type) {
@@ -596,6 +612,7 @@ System.register(['./canvas-metric', './distinct-points', 'lodash', 'jquery', 'mo
                     var width = (this._renderDimensions.width = rect.width);
                     var top = 0;
                     var elapsed = this.range.to - this.range.from;
+                    //console.log("data before render %j",this.data);
                     this._renderDimensions.matrix = [];
                     lodash_1.default.forEach(this.data, function (metric) {
                         var positions = [];
@@ -626,6 +643,7 @@ System.register(['./canvas-metric', './distinct-points', 'lodash', 'jquery', 'mo
                             y: top,
                             positions: positions,
                         });
+                        //  console.log("data before matrix %j",this._renderDimensions.matrix);
                         top += rowHeight;
                     });
                 };
@@ -712,9 +730,14 @@ System.register(['./canvas-metric', './distinct-points', 'lodash', 'jquery', 'mo
                     var _this = this;
                     var matrix = this._renderDimensions.matrix;
                     var ctx = this.context;
+                    //console.log("before fill rect matrix %j",matrix);
+                    var valuechange = 0;
+                    if (this.panel.gantCustom) {
+                        valuechange = 1;
+                    }
                     lodash_1.default.forEach(this.data, function (metric, i) {
                         var rowObj = matrix[i];
-                        for (var j = 0; j < rowObj.positions.length; j++) {
+                        for (var j = 0; j < rowObj.positions.length - valuechange; j++) {
                             var currentX = rowObj.positions[j];
                             var nextX = _this._renderDimensions.width;
                             if (j + 1 !== rowObj.positions.length) {

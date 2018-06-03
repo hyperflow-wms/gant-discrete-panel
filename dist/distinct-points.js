@@ -36,10 +36,17 @@ System.register(['lodash'], function(exports_1) {
                     this.transitionCount = 0;
                     this.distinctValuesCount = 0;
                     this.elapsed = 0;
+                    this.lastPoint = null;
                 }
                 // ts numeric ms,
                 // val is the normalized value
                 DistinctPoints.prototype.add = function (ts, val) {
+                    //console.log('TEST add');
+                    this.lastPoint = {
+                        val: val,
+                        start: ts,
+                        ms: 0,
+                    };
                     if (this.last == null) {
                         this.last = {
                             val: val,
@@ -78,30 +85,38 @@ System.register(['lodash'], function(exports_1) {
                 };
                 DistinctPoints.prototype.finish = function (ctrl) {
                     var _this = this;
+                    //console.log('TEST finish9');
                     if (this.changes.length < 1) {
                         console.log('no points found!');
                         return;
+                    }
+                    if (ctrl.panel.gantCustom == true && this.lastPoint != null) {
+                        //console.log('add my last point2');
+                        this.changes.push(this.lastPoint);
                     }
                     if (!this.asc) {
                         this.last = this.changes[0];
                         lodash_1.default.reverse(this.changes);
                     }
-                    // Add a point beyond the controls
-                    if (this.last.start < ctrl.range.to) {
-                        var until = ctrl.range.to + 1;
-                        // let now = Date.now();
-                        // if(this.last.start < now && ctrl.range.to > now) {
-                        //   until = now;
-                        // }
-                        // This won't be shown, but will keep the count consistent
-                        this.changes.push({
-                            val: this.last.val,
-                            start: until,
-                            ms: 0,
-                        });
+                    if (ctrl.panel.gantCustom == false) {
+                        // Add a point beyond the controls
+                        if (this.last.start < ctrl.range.to) {
+                            var until = ctrl.range.to + 1;
+                            // let now = Date.now();
+                            // if(this.last.start < now && ctrl.range.to > now) {
+                            //   until = now;
+                            // }
+                            // This won't be shown, but will keep the count consistent
+                            this.changes.push({
+                                val: this.last.val,
+                                start: until,
+                                ms: 0,
+                            });
+                        }
                     }
                     this.transitionCount = 0;
                     var distinct = new Map();
+                    //  console.log("changes %j",this.changes);
                     var last = this.changes[0];
                     for (var i = 1; i < this.changes.length; i++) {
                         var pt = this.changes[i];
