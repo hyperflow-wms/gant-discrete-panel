@@ -104,7 +104,8 @@ class DiscretePanelCtrl extends CanvasPanelCtrl {
     expandFromQueryS: 0,
     legendSortBy: '-ms',
     units: 'short',
-    gantCustom:false,
+    gantCustom: false,
+    popUp:false,
   };
 
   annotations: any = [];
@@ -303,24 +304,19 @@ class DiscretePanelCtrl extends CanvasPanelCtrl {
 
     //console.log("datareceived",dataList);
 
-    if(this.panel.gantCustom)
-    {
+    if (this.panel.gantCustom) {
       //console.log("will be sorting");
-      dataList.sort(
-        function(x, y)
-        {
-          //console.log("datareceived %j %j",x.datapoints[0][1],y.datapoints[0][1]);
-          if (x.datapoints[0][1] > y.datapoints[0][1]) {
-            return -1;
-          } else if (x.datapoints[0][1] < y.datapoints[0][1]) {
-            return 1;
-          }
-          return 0;
+      dataList.sort(function(x, y) {
+        //console.log("datareceived %j %j",x.datapoints[0][1],y.datapoints[0][1]);
+        if (x.datapoints[0][1] > y.datapoints[0][1]) {
+          return -1;
+        } else if (x.datapoints[0][1] < y.datapoints[0][1]) {
+          return 1;
         }
-      )
+        return 0;
+      });
     }
     //console.log("after sort",dataList);
-
 
     let data: DistinctPoints[] = [];
     _.forEach(dataList, metric => {
@@ -340,7 +336,6 @@ class DiscretePanelCtrl extends CanvasPanelCtrl {
           data.push(res);
         }
       } else {
-
         let res = new DistinctPoints(metric.target);
         _.forEach(metric.datapoints, point => {
           res.add(point[1], this.formatValue(point[0]));
@@ -610,7 +605,7 @@ class DiscretePanelCtrl extends CanvasPanelCtrl {
           }
         }
 
-        if (showTT) {
+        if (showTT && this.panel.popUp) {
           this.externalPT = isExternal;
           this.showTooltip(evt, hover, isExternal);
         }
@@ -672,7 +667,7 @@ class DiscretePanelCtrl extends CanvasPanelCtrl {
 
   _updateRenderDimensions() {
     this._renderDimensions = {};
-    
+
     const rect = (this._renderDimensions.rect = this.wrap.getBoundingClientRect());
     const rows = (this._renderDimensions.rows = this.data.length);
     const rowHeight = (this._renderDimensions.rowHeight = this.panel.rowHeight);
@@ -718,7 +713,7 @@ class DiscretePanelCtrl extends CanvasPanelCtrl {
         positions: positions,
       });
 
-    //  console.log("data before matrix %j",this._renderDimensions.matrix);
+      //  console.log("data before matrix %j",this._renderDimensions.matrix);
 
       top += rowHeight;
     });
@@ -815,15 +810,13 @@ class DiscretePanelCtrl extends CanvasPanelCtrl {
   }
 
   _renderRects() {
-    
     const matrix = this._renderDimensions.matrix;
     const ctx = this.context;
 
     //console.log("before fill rect matrix %j",matrix);
     let valuechange = 0;
-    if (this.panel.gantCustom)
-    {
-      valuechange =1 ;
+    if (this.panel.gantCustom) {
+      valuechange = 1;
     }
     _.forEach(this.data, (metric, i) => {
       const rowObj = matrix[i];

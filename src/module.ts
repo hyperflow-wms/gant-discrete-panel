@@ -105,6 +105,7 @@ class DiscretePanelCtrl extends CanvasPanelCtrl {
     legendSortBy: '-ms',
     units: 'short',
     gantCustom: false,
+    popUp: false,
   };
 
   annotations: any = [];
@@ -604,7 +605,7 @@ class DiscretePanelCtrl extends CanvasPanelCtrl {
           }
         }
 
-        if (showTT) {
+        if (showTT && this.panel.popUp) {
           this.externalPT = isExternal;
           this.showTooltip(evt, hover, isExternal);
         }

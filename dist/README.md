@@ -1,5 +1,7 @@
 ## Discrete Panel
 
+This panel is an extension of https://github.com/NatelEnergy/grafana-discrete-panel
+
 This panel shows discrete values in a horizontal graph. This lets show state transitions clearly. It is a good
 choice to display string or boolean data
 

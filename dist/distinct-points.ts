@@ -87,7 +87,7 @@ export class DistinctPoints {
       return;
     }
 
-    if (ctrl.panel.gantCustom==true && this.lastPoint != null) {
+    if (ctrl.panel.gantCustom == true && this.lastPoint != null) {
       //console.log('add my last point2');
       this.changes.push(this.lastPoint);
     }
@@ -97,8 +97,7 @@ export class DistinctPoints {
       _.reverse(this.changes);
     }
 
-    if(ctrl.panel.gantCustom==false)
-    {
+    if (ctrl.panel.gantCustom == false) {
       // Add a point beyond the controls
       if (this.last.start < ctrl.range.to) {
         let until = ctrl.range.to + 1;
@@ -118,7 +117,7 @@ export class DistinctPoints {
     this.transitionCount = 0;
     let distinct = new Map<string, LegendValue>();
 
-  //  console.log("changes %j",this.changes);
+    //  console.log("changes %j",this.changes);
     let last: PointInfo = this.changes[0];
     for (let i = 1; i < this.changes.length; i++) {
       let pt = this.changes[i];
@@ -155,8 +154,6 @@ export class DistinctPoints {
       value.per = value.ms / elapsed;
       this.legendInfo.push(value);
     });
-
-
 
     this.distinctValuesCount = _.size(this.legendInfo);
 

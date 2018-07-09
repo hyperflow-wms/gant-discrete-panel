@@ -123,6 +123,7 @@ System.register(['./canvas-metric', './distinct-points', 'lodash', 'jquery', 'mo
                         legendSortBy: '-ms',
                         units: 'short',
                         gantCustom: false,
+                        popUp: false,
                     };
                     this.annotations = [];
                     this.data = null;
@@ -544,7 +545,7 @@ System.register(['./canvas-metric', './distinct-points', 'lodash', 'jquery', 'mo
                                     }
                                 }
                             }
-                            if (showTT) {
+                            if (showTT && this.panel.popUp) {
                                 this.externalPT = isExternal;
                                 this.showTooltip(evt, hover, isExternal);
                             }
